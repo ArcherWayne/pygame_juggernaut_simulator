@@ -202,7 +202,6 @@ hero = pygame.sprite.GroupSingle()  # 定义hero这样一个单group 用来放�
 hero.add(Hero('example hero', HERO_HEALTH, HERO_MOVEMENT_SPEED, HERO_DAMAGE, HERO_FORESWING, HERO_BACKSWING,
               0))  # 在hero这个group中添加Hero这个类, 之后, 这个group中就有了这个类的实例
 creep_enemy_group = pygame.sprite.Group()
-
 creep_enemy_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(creep_enemy_timer, 3000)
 
