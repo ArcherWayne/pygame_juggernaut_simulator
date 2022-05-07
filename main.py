@@ -2,6 +2,7 @@ import pygame, sys, time
 from setting import *
 from creep import Creep
 from hero import Hero
+from debug import debug
 
 
 # general setup --------------------------------------------------------------------------------------------- #
@@ -29,7 +30,7 @@ collision_sprites = pygame.sprite.Group()
 hero = Hero(all_sprites, 'Juggernaut', HERO_HEALTH, HERO_MOVEMENT_SPEED, HERO_DAMAGE, HERO_FORESWING, HERO_BACKSWING) 
 # groups, name, health, movement_speed, damage, foreswing, backswing
 
-# mouse control ----------------------------------------------------------------------------------------------- # 
+# mouse control --------------------------------------------------------------------------------------------- # 
 mouse_pos = (0, 0)
 
 
@@ -40,6 +41,7 @@ mouse_pos = (0, 0)
 def main():
     last_time = time.time()
     while True:
+        
 
         # delta time    ------------------------------------------------------------------------------------- #
         dt = time.time() - last_time
@@ -51,15 +53,20 @@ def main():
                 pygame.quit()
                 sys.exit()
 
+        mouse_pos = pygame.mouse.get_pos()
+
         if game_active:
+            
+
+            # draw stuff    --------------------------------------------------------------------------------- #
             screen.fill(WHITE)
             screen.blit(background_surface, background_rect)
+            all_sprites.update(dt)
+            all_sprites.draw(screen)
 
-        all_sprites.update()
-        all_sprites.draw(screen)
+            debug(mouse_pos, 10, 10)
 
-
-        pygame.display.update()
+            pygame.display.update()
 
 
 if __name__ == "__main__":

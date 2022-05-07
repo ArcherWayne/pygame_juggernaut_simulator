@@ -1,9 +1,12 @@
 import pygame
 from setting import *
+from debug import debug
 
 class Hero(pygame.sprite.Sprite):
     def __init__(self, groups, name, health, movement_speed, damage, foreswing, backswing):
         super(Hero, self).__init__(groups)
+
+        # attributes
         self.name = name
         self.health = health
         self.max_health = self.health
@@ -13,79 +16,53 @@ class Hero(pygame.sprite.Sprite):
         self.foreswing = foreswing
         self.backswing = backswing
 
+        # image and rect
         self.hero_surface = pygame.transform.scale(
             pygame.image.load('assets/hero/juggernaut.png').convert_alpha(), (HERO_HEIGHT, HERO_WIDTH)
         )
         # 以下两行只能名字叫做image和rect, 这是pygame定义的draw函数中规定的
         self.image = self.hero_surface
         self.rect = self.image.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
-
-    # def mouse_right_click(self):
-    #     pass
-    #     # 语法: 检验右键是否与某个小兵像素碰撞
-    #     # 若没碰撞 则调用移动函数到右键点击的位置
-    #     # 若碰撞 则先移动到与小兵一定距离 然后调用攻击函数
-    #     # 更具体的实现方法: 要在主函数里面新定义一个鼠标操作类, 然后让这个实例去调用其他sprite实例的方法
-
-    def movement(self):
-        pass
-        # # 每帧移动0.1秒, 更新后又重新定位为原来的位置, 所以一定要数值比1 大(能否为比1大的小数呢)
-        # # self.rect.y += 1
-        # # self.rect.x += 1
-        # mouse_click = pygame.mouse.get_pressed()
-        # mouse_pos = pygame.mouse.get_pos()
-
-        # global target_pos
-
-        # if mouse_click[2] and mouse_pos != self.rect.midbottom:
-        #     target_pos = mouse_pos
-        #     self.flag_moving = 1
-        # elif mouse_click[2] and mouse_pos == self.rect.midbottom:
-        #     self.flag_moving = 0
-
-        # if self.flag_moving:
-        #     y_distance = self.rect.midbottom[1] - target_pos[1]
-        #     x_distance = self.rect.midbottom[0] - target_pos[0]
-
-        #     y_speed = int(math.sqrt(
-        #         math.pow(self.movement_speed, 2) / (math.pow((x_distance / y_distance), 2) + 1)
-        #     )) if y_distance != 0 else 0
-        #     x_speed = int(math.sqrt(
-        #         math.pow(self.movement_speed, 2) / (math.pow((y_distance / x_distance), 2) + 1)
-        #     )) if x_distance != 0 else 0
-
-        #     if y_distance < 0:
-        #         self.rect.y += y_speed
-        #     elif y_distance > 0:
-        #         self.rect.y -= y_speed
-        #     if x_distance < 0:
-        #         self.rect.x += x_speed
-        #     elif x_distance > 0:
-        #         self.rect.x -= x_speed
-        #     # if abs(self.rect.x-target_pos[0]) < x_speed or \
-        #     #         abs(self.rect.y-target_pos[1]) < y_speed:
-        #     if math.sqrt(math.pow(self.rect.midbottom[0] - target_pos[0], 2) + math.pow(
-        #             self.rect.midbottom[1] - target_pos[1], 2)) < self.movement_speed:
-        #         self.rect.x = target_pos[0] - HERO_WIDTH / 2
-        #         self.rect.y = target_pos[1] - HERO_HEIGHT
-        #     if self.rect.midbottom == target_pos:
-        #         self.flag_moving = 0
-
-    def attack(self):
-        pass
-
-    def animation(self):
-        pass
+        
+        # movement
+        self.pos = pygame.math.Vector2(self.rect.topleft)
+        self.direction = pygame.math.Vector2()
+        self.old_rect = self.rect.copy()
 
     def draw_health_bar(self):
         health_bar_background = pygame.Rect(self.rect.midtop[0] - 42, self.rect.midtop[1] - 22, 84, 12)
         health_bar_content = pygame.Rect(self.rect.midtop[0] - 40, self.rect.midtop[1] - 20, round(80 * self.health_percentage), 8)
         pygame.draw.rect(screen, BLACK, health_bar_background)
         pygame.draw.rect(screen, RED, health_bar_content)
- 
-    # def health_reduce(self, creep_damage):
-    #     self.health -= creep_damage
 
-    def update(self):
+    def keyboard_movement(self, dt):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]:
+            self.direction.y = -1
+        elif keys[pygame.K_s]:
+            self.direction.y = 1
+        else:
+            self.direction.y = 0
+
+        if keys[pygame.K_a]:
+            self.direction.x = -1
+        elif keys[pygame.K_d]:
+            self.direction.x = 1
+        else:
+            self.direction.x = 0
+
+        if self.direction.magnitude() != 0:
+            self.direction = self.direction.normalize()
+
+        debug(self.pos, 10, 30)
+
+        self.pos.x += self.direction.x * self.movement_speed * dt
+        self.rect.x = round(self.pos.x)
+        self.pos.y += self.direction.y * self.movement_speed * dt
+        self.rect.y = round(self.pos.y)
+        
+
+    def update(self, dt):
+        self.old_rect = self.rect.copy()
+        self.keyboard_movement(dt)
         self.draw_health_bar()
-        self.movement()
