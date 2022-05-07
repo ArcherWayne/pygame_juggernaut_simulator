@@ -61,8 +61,25 @@ class Hero(pygame.sprite.Sprite):
         self.pos.y += self.direction.y * self.movement_speed * dt
         self.rect.y = round(self.pos.y)
         
+    def boundary(self):
+        if self.rect.left < 0:
+            self.rect.left = 0
+            self.pos.x = self.rect.x
+
+        if self.rect.right > WIN_WIDTH:
+            self.rect.right = WIN_WIDTH
+            self.pos.x = self.rect.x
+
+        if self.rect.top < 0:
+            self.rect.top = 0
+            self.pos.y = self.rect.y
+
+        if self.rect.bottom > WIN_HEIGHT:
+            self.rect.bottom = WIN_HEIGHT
+            self.pos.y = self.rect.y
 
     def update(self, dt):
         self.old_rect = self.rect.copy()
         self.keyboard_movement(dt)
+        self.boundary()
         self.draw_health_bar()

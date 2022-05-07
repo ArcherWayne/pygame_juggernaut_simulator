@@ -1,8 +1,8 @@
-            screen.fill(WHITE)
-            screen.blit(background_surface, background_rect)
-            all_sprites.update()
-            all_sprites.draw(screen)
+tsg = 20
 
-            debug(mouse_pos, 10, 10)
+def foo(info):
+    for arg_name in info:
+        return info[arg_name], arg_name
 
-            pygame.display.update()
+
+print(foo(tsg))
