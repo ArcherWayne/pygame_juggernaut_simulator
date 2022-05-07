@@ -21,7 +21,7 @@ class Hero(pygame.sprite.Sprite):
         )
         # 以下两行只能名字叫做image和rect, 这是pygame定义的draw函数中规定的 更新: 并不是
         self.image = self.hero_surface
-        self.rect = self.image.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGTH / 2))
+        self.rect = self.image.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
 
     def mouse_right_click(self):
         pass
@@ -192,8 +192,8 @@ pygame.init()
 pygame.display.set_caption('blade game')
 pygame.display.set_icon(pygame.image.load('assets/blade game.png'))
 background_surface = pygame.transform.scale(
-    pygame.image.load('assets/ground.png').convert(), (WIN_WIDTH, WIN_HEIGTH))
-background_rect = background_surface.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGTH / 2))
+    pygame.image.load('assets/ground.png').convert(), (WIN_WIDTH, WIN_HEIGHT))
+background_rect = background_surface.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
 clock = pygame.time.Clock()
 font = pygame.font.Font('assets/font/Pixeltype.ttf', 50)
 
@@ -220,13 +220,13 @@ while True:
             if event.type == creep_enemy_timer:
                 creep_enemy_group.add(
                     Creep_enemy(CREEP_HEALTH, CREEP_MOVEMENT_SPEED, CREEP_DAMAGE,
-                                (random.randint(0, WIN_WIDTH), random.randint(0, WIN_HEIGTH))))
+                                (random.randint(0, WIN_WIDTH), random.randint(0, WIN_HEIGHT))))
             if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
                 hero.sprite.health = 0
         else:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 game_active = True
-                hero.sprite.rect.center = (WIN_WIDTH / 2, WIN_HEIGTH / 2)
+                hero.sprite.rect.center = (WIN_WIDTH / 2, WIN_HEIGHT / 2)
                 hero.sprite.health = HERO_HEALTH  # 重置血量
                 creep_enemy_group.empty()
                 # start_time = int(pygame.time.get_ticks() / 1000)

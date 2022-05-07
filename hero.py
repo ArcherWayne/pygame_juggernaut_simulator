@@ -1,29 +1,31 @@
 import pygame
-import setting
+from setting import *
 
 class Hero(pygame.sprite.Sprite):
-    def __init__(self, name, health, movement_speed, damage, foreswing, backswing, flag_moving):
-        super(Hero, self).__init__()
+    def __init__(self, groups, name, health, movement_speed, damage, foreswing, backswing):
+        super(Hero, self).__init__(groups)
         self.name = name
         self.health = health
+        self.max_health = self.health
+        self.health_percentage = self.health/self.max_health
         self.movement_speed = movement_speed
         self.damage = damage
         self.foreswing = foreswing
         self.backswing = backswing
-        self.flag_moving = flag_moving
 
         self.hero_surface = pygame.transform.scale(
-            pygame.image.load('assets/graphics/heroes/hero 45.png').convert_alpha(), (HERO_HEIGHT, HERO_WIDTH)
+            pygame.image.load('assets/hero/juggernaut.png').convert_alpha(), (HERO_HEIGHT, HERO_WIDTH)
         )
-        # 以下两行只能名字叫做image和rect, 这是pygame定义的draw函数中规定的 更新: 并不是
+        # 以下两行只能名字叫做image和rect, 这是pygame定义的draw函数中规定的
         self.image = self.hero_surface
-        self.rect = self.image.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGTH / 2))
+        self.rect = self.image.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
 
-    def mouse_right_click(self):
-        pass
-        # 语法: 检验右键是否与某个小兵像素碰撞
-        # 若没碰撞 则调用移动函数到右键点击的位置
-        # 若碰撞 则先移动到与小兵一定距离 然后调用攻击函数
+    # def mouse_right_click(self):
+    #     pass
+    #     # 语法: 检验右键是否与某个小兵像素碰撞
+    #     # 若没碰撞 则调用移动函数到右键点击的位置
+    #     # 若碰撞 则先移动到与小兵一定距离 然后调用攻击函数
+    #     # 更具体的实现方法: 要在主函数里面新定义一个鼠标操作类, 然后让这个实例去调用其他sprite实例的方法
 
     def movement(self):
         pass
@@ -73,18 +75,16 @@ class Hero(pygame.sprite.Sprite):
         pass
 
     def animation(self):
-        if self.flag_moving == 1:
-            pass
+        pass
 
     def draw_health_bar(self):
         health_bar_background = pygame.Rect(self.rect.midtop[0] - 42, self.rect.midtop[1] - 22, 84, 12)
-        health_bar_content = pygame.Rect(self.rect.midtop[0] - 40, self.rect.midtop[1] - 20,
-                                         80 * (self.health / HERO_HEALTH), 8)
+        health_bar_content = pygame.Rect(self.rect.midtop[0] - 40, self.rect.midtop[1] - 20, round(80 * self.health_percentage), 8)
         pygame.draw.rect(screen, BLACK, health_bar_background)
         pygame.draw.rect(screen, RED, health_bar_content)
-
-    def health_reduce(self, creep_damage):
-        self.health -= creep_damage
+ 
+    # def health_reduce(self, creep_damage):
+    #     self.health -= creep_damage
 
     def update(self):
         self.draw_health_bar()

@@ -2,7 +2,8 @@ import pygame
 
 window_size = (1400, 800)
 WIN_WIDTH = window_size[0]
-WIN_HEIGTH = window_size[1]
+WIN_HEIGHT = window_size[1]
+screen = pygame.display.set_mode(window_size)
 
 FPS = 60
 
@@ -10,9 +11,9 @@ FPS = 60
 # __init__(self, name, health, movement_speed, damage, forswing, backswing, flag_moving)
 HERO_HEIGHT = 60
 HERO_WIDTH = 60
-HERO_HEALTH = 120
-HERO_MOVEMENT_SPEED = 4
-HERO_DAMAGE = 16
+HERO_HEALTH = 600
+HERO_MOVEMENT_SPEED = 3
+HERO_DAMAGE = 50
 HERO_FORESWING = 0.1
 HERO_BACKSWING = 0.2
 
