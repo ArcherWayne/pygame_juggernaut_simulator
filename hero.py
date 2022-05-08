@@ -25,17 +25,21 @@ class Hero(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
         
         # movement
+        self.flag_moving = 0
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2()
         self.old_rect = self.rect.copy()
 
+    def get_dt(self, dt):
+        self.dt = dt
+    
     def draw_health_bar(self):
         health_bar_background = pygame.Rect(self.rect.midtop[0] - 42, self.rect.midtop[1] - 22, 84, 12)
         health_bar_content = pygame.Rect(self.rect.midtop[0] - 40, self.rect.midtop[1] - 20, round(80 * self.health_percentage), 8)
         pygame.draw.rect(screen, BLACK, health_bar_background)
         pygame.draw.rect(screen, RED, health_bar_content)
 
-    def keyboard_movement(self, dt):
+    def keyboard_movement(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
             self.direction.y = -1
@@ -54,12 +58,24 @@ class Hero(pygame.sprite.Sprite):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
 
-        debug(self.pos, 10, 30)
-
-        self.pos.x += self.direction.x * self.movement_speed * dt
+        self.pos.x += self.direction.x * self.movement_speed * self.dt
         self.rect.x = round(self.pos.x)
-        self.pos.y += self.direction.y * self.movement_speed * dt
+        self.pos.y += self.direction.y * self.movement_speed * self.dt
         self.rect.y = round(self.pos.y)
+
+    def init_mouse_movement(self, mouse_click_pos):
+        self.target_pos = mouse_click_pos
+        if self.rect.midbottom != mouse_click_pos:
+            self.flag_moving = 1
+
+    def mouse_movement(self):
+        debug(self.flag_moving, 10, 10)
+        if self.flag_moving:
+            y_distance = self.rect.midbottom[1] - self.target_pos[1]
+            x_distance = self.rect.midbottom[0] - self.target_pos[0]
+
+
+
         
     def boundary(self):
         if self.rect.left < 0:
@@ -78,8 +94,9 @@ class Hero(pygame.sprite.Sprite):
             self.rect.bottom = WIN_HEIGHT
             self.pos.y = self.rect.y
 
-    def update(self, dt):
+    def update(self):
         self.old_rect = self.rect.copy()
-        self.keyboard_movement(dt)
+        self.keyboard_movement()
+        self.mouse_movement()
         self.boundary()
         self.draw_health_bar()

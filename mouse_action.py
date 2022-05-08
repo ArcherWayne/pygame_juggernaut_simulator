@@ -1,15 +1,13 @@
 import pygame
+from hero import Hero
 
-# class MouseAction():
-#     def __init__(self) -> None:
-#         pass
+def mouse_action(mouse_pos, mouse_click_pos, mouse_click_button, hero):
+    # mouse_pos_ma = mouse_pos
+    # mouse_click_pos_ma = mouse_click_pos
+    # mouse_click_button_ma = mouse_click_button
+    # dt_ma = dt
 
-#     def mouse_event(self):
-#         if event.type == pygame.MOUSEMOTION:
-#             self.mouse_position = 
-
-
-def mouse_action():
-    pass
+    if mouse_click_button == 3:
+        hero.init_mouse_movement(mouse_click_pos)
 
     

@@ -3,7 +3,7 @@ from setting import *
 from creep import Creep
 from hero import Hero
 from debug import debug
-
+from mouse_action import mouse_action
 
 # general setup --------------------------------------------------------------------------------------------- #
 ## pygame setup
@@ -30,21 +30,23 @@ collision_sprites = pygame.sprite.Group()
 hero = Hero(all_sprites, 'Juggernaut', HERO_HEALTH, HERO_MOVEMENT_SPEED, HERO_DAMAGE, HERO_FORESWING, HERO_BACKSWING) 
 # groups, name, health, movement_speed, damage, foreswing, backswing
 
-# mouse control --------------------------------------------------------------------------------------------- # 
-mouse_pos = (0, 0)
-
-
-
 # main ------------------------------------------------------------------------------------------------------ # 
 
 
 def main():
     last_time = time.time()
+
+    # mouse control init ------------------------------------------------------------------------------------ # 
+    mouse_pos = (0, 0)
+    mouse_click_pos = (0, 0)
+    mouse_click_button = 0
+
     while True:
         
 
         # delta time    ------------------------------------------------------------------------------------- #
         dt = time.time() - last_time
+        hero.get_dt(dt)
         last_time = time.time()
 
         # event loop    ------------------------------------------------------------------------------------- #
@@ -53,7 +55,13 @@ def main():
                 pygame.quit()
                 sys.exit()
 
-        mouse_pos = pygame.mouse.get_pos()
+            if event.type == pygame.MOUSEMOTION:
+                mouse_pos = event.pos
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_click_pos = event.pos
+                mouse_click_button = event.button
+                mouse_action(mouse_pos, mouse_click_pos, mouse_click_button, hero)
 
         if game_active:
             
@@ -61,13 +69,13 @@ def main():
             # draw stuff    --------------------------------------------------------------------------------- #
             screen.fill(WHITE)
             screen.blit(background_surface, background_rect)
-            all_sprites.update(dt)
+            all_sprites.update()
             all_sprites.draw(screen)
 
-            debug(mouse_pos, 10, 10)
-
-            pygame.display.update()
-
+        # debug(mouse_pos, 10, 10)
+        # debug(mouse_click_pos, 10 ,30)
+        # debug(mouse_click_button, 10, 50)
+        pygame.display.update()
 
 if __name__ == "__main__":
     main()
