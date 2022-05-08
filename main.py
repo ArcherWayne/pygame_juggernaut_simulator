@@ -65,7 +65,6 @@ def main():
 
         if game_active:
             
-
             # draw stuff    --------------------------------------------------------------------------------- #
             screen.fill(WHITE)
             screen.blit(background_surface, background_rect)

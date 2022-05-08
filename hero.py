@@ -25,10 +25,13 @@ class Hero(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
         
         # movement
-        self.flag_moving = 0
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2()
         self.old_rect = self.rect.copy()
+
+        # varibles init
+        self.flag_moving = 0
+        self.target_pos = (0,0)
 
     def get_dt(self, dt):
         self.dt = dt
@@ -69,14 +72,23 @@ class Hero(pygame.sprite.Sprite):
             self.flag_moving = 1
 
     def mouse_movement(self):
-        debug(self.flag_moving, 10, 10)
+        debug(self.flag_moving)
         if self.flag_moving:
-            y_distance = self.rect.midbottom[1] - self.target_pos[1]
-            x_distance = self.rect.midbottom[0] - self.target_pos[0]
+            self.direction.y = self.target_pos[1] - self.rect.midbottom[1]
+            self.direction.x = self.target_pos[0] - self.rect.midbottom[0]
+
+            if self.direction.magnitude() != 0:
+                self.direction = self.direction.normalize()
+
+            self.pos.x += self.direction.x * self.movement_speed * self.dt
+            self.rect.x = round(self.pos.x)
+            self.pos.y += self.direction.y * self.movement_speed * self.dt
+            self.rect.y = round(self.pos.y)
+
+        if self.rect.midbottom == self.target_pos:
+            self.flag_moving = 0
 
 
-
-        
     def boundary(self):
         if self.rect.left < 0:
             self.rect.left = 0
