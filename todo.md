@@ -1,6 +1,7 @@
 # 待完成
-1. 将keyboard_movement修改为事件触发, KEYDOWN和KEYUP之间的间隔就是长按的事件
-2. 
+1. ~~将keyboard_movement修改为事件触发, KEYDOWN和KEYUP之间的间隔就是长按的事件~~(暂时不用)
+2. 抽空考虑一下接下来要实现的功能
+3. 做个动画效果?
 
 #  笔记
 

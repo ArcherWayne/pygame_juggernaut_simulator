@@ -28,6 +28,7 @@ game_active = True
 all_sprites = pygame.sprite.Group()
 collision_sprites = pygame.sprite.Group()
 hero = Hero(all_sprites, 'Juggernaut', HERO_HEALTH, HERO_MOVEMENT_SPEED, HERO_DAMAGE, HERO_FORESWING, HERO_BACKSWING) 
+creep = Creep(all_sprites, CREEP_HEALTH, CREEP_MOVEMENT_SPEED, CREEP_DAMAGE, (800, 700), hero)
 # groups, name, health, movement_speed, damage, foreswing, backswing
 
 # main ------------------------------------------------------------------------------------------------------ # 
@@ -47,6 +48,7 @@ def main():
         # delta time    ------------------------------------------------------------------------------------- #
         dt = time.time() - last_time
         hero.get_dt(dt)
+        creep.get_dt(dt)
         last_time = time.time()
 
         # event loop    ------------------------------------------------------------------------------------- #
@@ -71,9 +73,6 @@ def main():
             all_sprites.update()
             all_sprites.draw(screen)
 
-        # debug(mouse_pos, 10, 10)
-        # debug(mouse_click_pos, 10 ,30)
-        # debug(mouse_click_button, 10, 50)
         pygame.display.update()
 
 if __name__ == "__main__":

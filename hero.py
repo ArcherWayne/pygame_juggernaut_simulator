@@ -27,7 +27,7 @@ class Hero(pygame.sprite.Sprite):
         # movement
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2()
-        self.old_rect = self.rect.copy()
+        self.old_rect = self.rect.copy() # old_rect是用来检测碰撞的一部分, 不是dt中的一部分
 
         # varibles init
         self.flag_moving = 0
@@ -45,15 +45,19 @@ class Hero(pygame.sprite.Sprite):
     def keyboard_movement(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
+            self.flag_moving = 0
             self.direction.y = -1
         elif keys[pygame.K_s]:
+            self.flag_moving = 0
             self.direction.y = 1
         else:
             self.direction.y = 0
 
         if keys[pygame.K_a]:
+            self.flag_moving = 0
             self.direction.x = -1
         elif keys[pygame.K_d]:
+            self.flag_moving = 0
             self.direction.x = 1
         else:
             self.direction.x = 0
@@ -72,7 +76,6 @@ class Hero(pygame.sprite.Sprite):
             self.flag_moving = 1
 
     def mouse_movement(self):
-        debug(self.flag_moving)
         if self.flag_moving:
             self.direction.y = self.target_pos[1] - self.rect.midbottom[1]
             self.direction.x = self.target_pos[0] - self.rect.midbottom[0]
@@ -87,7 +90,6 @@ class Hero(pygame.sprite.Sprite):
 
         if self.rect.midbottom == self.target_pos:
             self.flag_moving = 0
-
 
     def boundary(self):
         if self.rect.left < 0:

@@ -4,10 +4,10 @@ pygame.init()
 font = pygame.font.Font(None, 30)
 
 
-def debug(info, x=10, y=10):
+def debug(info_name, info, x=10, y=10):
     display_surf = pygame.display.get_surface()
     debug_surf = font.render(
-        f"{str(info)}"
+        f"{str(info_name)}={str(info)}"
         , True, 'White')
     debug_rect = debug_surf.get_rect(topleft=(x, y))
     pygame.draw.rect(display_surf, 'Black', debug_rect)
