@@ -4,7 +4,7 @@ pygame.init()
 font = pygame.font.Font(None, 30)
 
 
-def debug(info_name, info, x=10, y=10):
+def debug(info, x=10, y=10, info_name = 'info_name'):
     display_surf = pygame.display.get_surface()
     debug_surf = font.render(
         f"{str(info_name)}={str(info)}"

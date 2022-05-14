@@ -36,12 +36,6 @@ class Hero(pygame.sprite.Sprite):
     def get_dt(self, dt):
         self.dt = dt
     
-    def draw_health_bar(self):
-        health_bar_background = pygame.Rect(self.rect.midtop[0] - 42, self.rect.midtop[1] - 22, 84, 12)
-        health_bar_content = pygame.Rect(self.rect.midtop[0] - 40, self.rect.midtop[1] - 20, round(80 * self.health_percentage), 8)
-        pygame.draw.rect(screen, BLACK, health_bar_background)
-        pygame.draw.rect(screen, RED, health_bar_content)
-
     def keyboard_movement(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
@@ -107,7 +101,15 @@ class Hero(pygame.sprite.Sprite):
         if self.rect.bottom > WIN_HEIGHT:
             self.rect.bottom = WIN_HEIGHT
             self.pos.y = self.rect.y
-
+    
+    
+    def draw_health_bar(self):
+        health_bar_background = pygame.Rect(self.rect.midtop[0] - 42, self.rect.midtop[1] - 22, 84, 12)
+        health_bar_content = pygame.Rect(self.rect.midtop[0] - 40, self.rect.midtop[1] - 20, round(80 * self.health_percentage), 8)
+        pygame.draw.rect(screen, BLACK, health_bar_background)
+        pygame.draw.rect(screen, RED, health_bar_content)
+    
+    
     def update(self):
         self.old_rect = self.rect.copy()
         self.keyboard_movement()
