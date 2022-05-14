@@ -1,21 +1,24 @@
-import pygame, sys, time
+import pygame
+import sys
+import time
 from setting import *
 from creep import Creep
 from hero import Hero
 from debug import debug
 from mouse_action import mouse_action
+from keyboard_action import keyboard_action
 
 # general setup --------------------------------------------------------------------------------------------- #
 ## pygame setup
 pygame.init()
-
 pygame.display.set_caption('juggernaut simulator')
 pygame.display.set_icon(pygame.image.load('assets/blade game.png'))
 background_surface = pygame.transform.scale(
     pygame.image.load('assets/background/ground.png').convert(), (WIN_WIDTH, WIN_HEIGHT))
-background_rect = background_surface.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
-clock = pygame.time.Clock()
+background_rect = background_surface.get_rect(
+    center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
 font = pygame.font.Font('assets/font/Pixeltype.ttf', 50)
+clock = pygame.time.Clock()
 
 ## varibles setup
 game_active = True
@@ -24,26 +27,31 @@ game_active = True
 # class = Class()
 
 
-# group setup ----------------------------------------------------------------------------------------------- # 
+# group setup ----------------------------------------------------------------------------------------------- #
 all_sprites = pygame.sprite.Group()
 collision_sprites = pygame.sprite.Group()
-hero = Hero(all_sprites, 'Juggernaut', HERO_HEALTH, HERO_MOVEMENT_SPEED, HERO_DAMAGE, HERO_FORESWING, HERO_BACKSWING) 
-creep = Creep(all_sprites, CREEP_HEALTH, CREEP_MOVEMENT_SPEED, CREEP_DAMAGE, (800, 700), hero)
+hero = Hero(all_sprites, 'Juggernaut', HERO_HEALTH,
+            HERO_MOVEMENT_SPEED, HERO_DAMAGE, HERO_FORESWING, HERO_BACKSWING)
+creep = Creep(all_sprites, CREEP_HEALTH, CREEP_MOVEMENT_SPEED,
+              CREEP_DAMAGE, (800, 700), hero)
 # groups, name, health, movement_speed, damage, foreswing, backswing
 
-# main ------------------------------------------------------------------------------------------------------ # 
+# main ------------------------------------------------------------------------------------------------------ #
 
 
 def main():
     last_time = time.time()
 
-    # mouse control init ------------------------------------------------------------------------------------ # 
+    # mouse control init ------------------------------------------------------------------------------------ #
     mouse_pos = (0, 0)
     mouse_click_pos = (0, 0)
     mouse_click_button = 0
 
+    # keyboard control init --------------------------------------------------------------------------------- #
+    keyboard_down_button = 0
+
     while True:
-        
+        clock.tick(FPS)
 
         # delta time    ------------------------------------------------------------------------------------- #
         dt = time.time() - last_time
@@ -63,17 +71,29 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_click_pos = event.pos
                 mouse_click_button = event.button
-                mouse_action(mouse_pos, mouse_click_pos, mouse_click_button, hero)
+                mouse_action(mouse_pos, mouse_click_pos,
+                             mouse_click_button, hero)
+
+            if event.type == pygame.KEYDOWN:
+                keyboard_down_button = event.key
+                keyboard_action(keyboard_down_button, hero)
+
+            # if event.type == pygame.KEYUP:
+            #     keyboard_up_button = event.key
 
         if game_active:
-            
+
             # draw stuff    --------------------------------------------------------------------------------- #
             screen.fill(WHITE)
             screen.blit(background_surface, background_rect)
             all_sprites.update()
             all_sprites.draw(screen)
 
+            # debug goes behind here !!!
+            # debug(keyboard_down_button, 10, 10)
+
         pygame.display.update()
+
 
 if __name__ == "__main__":
     main()
