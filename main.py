@@ -1,10 +1,9 @@
-import pygame
-import sys
-import time
+import pygame, sys, time
 from setting import *
 from creep import Creep
 from hero import Hero
 from debug import debug
+# from clip import clip
 from mouse_action import mouse_action
 from keyboard_action import keyboard_action
 
@@ -37,8 +36,6 @@ creep = Creep(all_sprites, CREEP_HEALTH, CREEP_MOVEMENT_SPEED,
 # groups, name, health, movement_speed, damage, foreswing, backswing
 
 # main ------------------------------------------------------------------------------------------------------ #
-
-
 def main():
     last_time = time.time()
 
@@ -71,12 +68,13 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_click_pos = event.pos
                 mouse_click_button = event.button
-                mouse_action(mouse_pos, mouse_click_pos,
-                             mouse_click_button, hero)
+                mouse_action(mouse_pos, mouse_click_pos, mouse_click_button, hero)
 
             if event.type == pygame.KEYDOWN:
                 keyboard_down_button = event.key
+                # print(keyboard_down_button)
                 keyboard_action(keyboard_down_button, hero)
+                
 
             # if event.type == pygame.KEYUP:
             #     keyboard_up_button = event.key
@@ -89,8 +87,12 @@ def main():
             all_sprites.update()
             all_sprites.draw(screen)
 
-            # debug goes behind here !!!
+            # debug goes behind here !!! -------------------------------------------------------------------- #
             # debug(keyboard_down_button, 10, 10)
+            # debug(dt)
+            # debug(hero.state_check_list)
+
+            
 
         pygame.display.update()
 

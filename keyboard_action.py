@@ -1,22 +1,25 @@
 import pygame
 from hero import Hero
+from hero_skill import *
+
+# w 119 s 115 a 97 d 100
 
 def keyboard_action(keyboard_down_button, hero):
     if keyboard_down_button == 49:
         # key 1 is pressed
-        print('1')
+        hero.hero_use_skill(1)
 
     if keyboard_down_button == 50:
         # key 2 is pressed
         print('2')
-        pass
+        hero.hero_use_skill(2)
 
     if keyboard_down_button == 51:
         # key 3 is pressed
         print('3')
-        pass
+        hero.hero_use_skill(3)
 
     if keyboard_down_button == 52:
         # key 4 is pressed
         print('4')
-        pass
+        hero.hero_use_skill(4)

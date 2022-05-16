@@ -9,8 +9,8 @@ FPS = 60
 
 # hero stats
 # __init__(self, name, health, movement_speed, damage, forswing, backswing, flag_moving)
-HERO_HEIGHT = 60
-HERO_WIDTH = 60
+HERO_HEIGHT = 96
+HERO_WIDTH = 96
 HERO_HEALTH = 600
 HERO_MOVEMENT_SPEED = 200
 HERO_DAMAGE = 50

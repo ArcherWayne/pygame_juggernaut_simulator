@@ -36,7 +36,7 @@ class Creep(pygame.sprite.Sprite):
         # movement
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2()
-        self.old_rect = self.rect.copy()  # old_rect是用来检测碰撞的一部分, 不是dt中的一部分
+        self.old_rect = self.rect.copy()  # old_rect是用来检测碰撞的一部分 不是dt中的一部分
 
         # varibles init
         self.hero = hero

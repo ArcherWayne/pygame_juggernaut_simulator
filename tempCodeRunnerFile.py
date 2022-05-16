@@ -1,1 +1,4 @@
-use_action(mouse_pos, mouse_click_pos, mouse_click_button
+def ab(a, b):
+    return a+b
+
+print(ab(3, 5))
