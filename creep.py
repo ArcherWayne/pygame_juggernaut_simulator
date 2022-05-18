@@ -23,20 +23,28 @@ class Creep(pygame.sprite.Sprite):
         self.image = self.creep_enemy_surface
         self.rect = self.image.get_rect(center=spawn_location)
 
-        creep_walk_1 = pygame.transform.scale(
+        creep_walk_1_right = pygame.transform.scale(
             pygame.image.load(
                 'assets/creep/player_walk_1.png').convert_alpha(), (CREEP_HEIGHT, CREEP_WIDTH)
         )
-        creep_walk_2 = pygame.transform.scale(
+        creep_walk_2_right = pygame.transform.scale(
             pygame.image.load(
                 'assets/creep/player_walk_2.png').convert_alpha(), (CREEP_HEIGHT, CREEP_WIDTH)
         )
-        self.creep_walk = [creep_walk_1, creep_walk_2]
+        creep_walk_1_left = pygame.transform.flip(creep_walk_1_right, 1, 0)
+        creep_walk_2_left = pygame.transform.flip(creep_walk_2_right, 1, 0)
+        self.creep_walk_left = [creep_walk_1_left, creep_walk_2_left]
+        self.creep_walk_right = [creep_walk_1_right, creep_walk_2_right]
 
         # movement
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2()
         self.old_rect = self.rect.copy()  # old_rect是用来检测碰撞的一部分 不是dt中的一部分
+        self.facing_direction = 0
+
+        # state check
+        self.idle_state = 1
+        self.moving_state = 0
 
         # varibles init
         self.hero = hero
@@ -72,15 +80,40 @@ class Creep(pygame.sprite.Sprite):
             self.pos.y += self.direction.y * self.movement_speed * self.dt
             self.rect.y = round(self.pos.y)
 
-    def movement_animation(self):
-        if self.flag_moving:
-            self.movement_animation_index += 0.1
-            if self.movement_animation_index >= len(self.creep_walk):
-                self.movement_animation_index = 0
+    def creep_facing_direction(self):
+        if self.old_rect.x < self.rect.x:
+            self.facing_direction = 1
+        elif self.old_rect.x > self.rect.x:
+            self.facing_direction = 0
 
-            self.image = self.creep_walk[int(self.movement_animation_index)]
-        elif ~self.flag_moving:
+    def creep_state_check(self):
+        # update creep state
+        if self.old_rect.x != self.rect.x or self.old_rect.y != self.rect.y:
+            self.idle_state = 0
+            self.moving_state = 1
+        else:
+            self.idle_state = 1
+            self.moving_state = 0
+
+        self.state_check_list = [self.idle_state, self.moving_state]
+        
+
+    def creep_state_animation(self):
+        if self.state_check_list[0]: # 检查静止不动状态
             self.image = self.creep_enemy_surface
+
+        if self.state_check_list[1]: # 检查移动状态
+            if self.facing_direction == 0: # facing left
+                self.movement_animation_index += 0.1
+                if self.movement_animation_index >= len(self.creep_walk_left):
+                    self.movement_animation_index = 0
+                self.image = self.creep_walk_left[int(self.movement_animation_index)]
+
+            if self.facing_direction == 1: # facing right
+                self.movement_animation_index += 0.1
+                if self.movement_animation_index >= len(self.creep_walk_right):
+                    self.movement_animation_index = 0
+                self.image = self.creep_walk_right[int(self.movement_animation_index)]
 
     def draw_health_bar(self):
         health_bar_background = pygame.Rect(
@@ -91,6 +124,9 @@ class Creep(pygame.sprite.Sprite):
         pygame.draw.rect(screen, RED, health_bar_content)
 
     def update(self):
+        self.old_rect = self.rect.copy()
         self.movement()
-        self.movement_animation()
+        self.creep_facing_direction()
+        self.creep_state_check()
+        self.creep_state_animation()
         self.draw_health_bar()

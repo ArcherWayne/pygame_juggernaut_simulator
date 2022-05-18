@@ -33,7 +33,6 @@ hero = Hero(all_sprites, 'Juggernaut', HERO_HEALTH,
             HERO_MOVEMENT_SPEED, HERO_DAMAGE, HERO_FORESWING, HERO_BACKSWING)
 creep = Creep(all_sprites, CREEP_HEALTH, CREEP_MOVEMENT_SPEED,
               CREEP_DAMAGE, (800, 700), hero)
-# groups, name, health, movement_speed, damage, foreswing, backswing
 
 # main ------------------------------------------------------------------------------------------------------ #
 def main():
@@ -80,7 +79,6 @@ def main():
             #     keyboard_up_button = event.key
 
         if game_active:
-
             # draw stuff    --------------------------------------------------------------------------------- #
             screen.fill(WHITE)
             screen.blit(background_surface, background_rect)
@@ -91,6 +89,8 @@ def main():
             # debug(keyboard_down_button, 10, 10)
             # debug(dt)
             # debug(hero.state_check_list)
+            # debug(hero.facing_direction)
+            debug(all_sprites)
 
             
 

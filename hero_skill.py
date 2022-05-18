@@ -2,15 +2,19 @@ import pygame
 import hero
 import creep
 
-def blade_fury(self, creep):
-    print('Blade_fury!!')
-    pass
+class HeroSkill:
+    def blade_fury(self):
+        print('Blade_fury!!')
 
-def healing_ward():
-    pass
 
-def blade_dance():
-    pass
+    def healing_ward(self):
+        print('healing_ward!!')
 
-def swiftslash():
-    pass
+
+    def blade_dance(self):
+        print('blade_dance!!')
+
+
+    def swiftslash(self):
+        print('swiftslash!!')
+

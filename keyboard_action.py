@@ -11,15 +11,12 @@ def keyboard_action(keyboard_down_button, hero):
 
     if keyboard_down_button == 50:
         # key 2 is pressed
-        print('2')
         hero.hero_use_skill(2)
 
     if keyboard_down_button == 51:
         # key 3 is pressed
-        print('3')
         hero.hero_use_skill(3)
 
     if keyboard_down_button == 52:
         # key 4 is pressed
-        print('4')
         hero.hero_use_skill(4)
