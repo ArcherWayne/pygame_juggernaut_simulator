@@ -29,6 +29,8 @@ class Hero(pygame.sprite.Sprite):
         # # 以下两行只能名字叫做image和rect, 这是pygame定义的draw函数中规定的
         # self.image = self.hero_surface
         # self.rect = self.image.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
+
+        # idle_animation
         idle_image = pygame.image.load(
             'assets/hero/hero_idle_animation.png').convert_alpha()
         idle_animation_frame_1_right = pygame.transform.scale(
@@ -47,8 +49,32 @@ class Hero(pygame.sprite.Sprite):
             idle_animation_frame_1_right, idle_animation_frame_2_right, idle_animation_frame_3_right, idle_animation_frame_2_right]
         self.idle_animation_list_left = [
             idle_animation_frame_1_left, idle_animation_frame_2_left, idle_animation_frame_3_left, idle_animation_frame_2_left]
-        self.movement_animation_list_right = []
-        self.movement_animation_list_left = []
+
+        # walking_animation
+        walking_image = pygame.image.load(
+            'assets/hero/hero_walking_animation.png').convert_alpha()
+        walking_animation_frame_1_right = pygame.transform.scale(
+            clip(walking_image, 0, 0, 96, 96), (HERO_HEIGHT, HERO_WIDTH))
+        walking_animation_frame_2_right = pygame.transform.scale(
+            clip(walking_image, 0, 96, 96, 96), (HERO_HEIGHT, HERO_WIDTH))
+        walking_animation_frame_3_right = pygame.transform.scale(
+            clip(walking_image, 0, 192, 96, 96), (HERO_HEIGHT, HERO_WIDTH))
+        walking_animation_frame_4_right = pygame.transform.scale(
+            clip(walking_image, 0, 288, 96, 96), (HERO_HEIGHT, HERO_WIDTH))
+        walking_animation_frame_1_left = pygame.transform.flip(
+            walking_animation_frame_1_right, 1, 0)
+        walking_animation_frame_2_left = pygame.transform.flip(
+            walking_animation_frame_2_right, 1, 0)
+        walking_animation_frame_3_left = pygame.transform.flip(
+            walking_animation_frame_3_right, 1, 0)
+        walking_animation_frame_4_left = pygame.transform.flip(
+            walking_animation_frame_4_right, 1, 0)
+        self.walking_animation_list_right = [walking_animation_frame_1_right, walking_animation_frame_2_right,\
+             walking_animation_frame_3_right, walking_animation_frame_4_right]
+        self.walking_animation_list_left = [walking_animation_frame_1_left, walking_animation_frame_2_left, \
+            walking_animation_frame_3_left, walking_animation_frame_4_left]
+        
+        # init animation
         self.image = idle_animation_frame_1_right
         self.rect = self.image.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
 
@@ -71,6 +97,7 @@ class Hero(pygame.sprite.Sprite):
         self.flag_moving = 0
         self.target_pos = (0, 0)
         self.idle_animation_index = 0
+        self.walking_animation_index = 0
 
     def get_dt(self, dt):
         self.dt = dt
@@ -169,22 +196,33 @@ class Hero(pygame.sprite.Sprite):
 
     def hero_state_animation(self):
         if self.state_check_list[0]: # 检查静止不动状态
-            if self.facing_direction == 1:
-                self.idle_animation_index += 1/30
+            self.idle_animation_index += 1/30
+            if self.facing_direction == 1: # facing right
                 if self.idle_animation_index >= len(self.idle_animation_list_right):
                     self.idle_animation_index = 0
                 self.image = self.idle_animation_list_right[int(
                     self.idle_animation_index)]
 
-            elif self.facing_direction == 0:
-                self.idle_animation_index += 1/30
+            elif self.facing_direction == 0: # facing left
+                # self.idle_animation_index += 1/30
                 if self.idle_animation_index >= len(self.idle_animation_list_left):
                     self.idle_animation_index = 0
                 self.image = self.idle_animation_list_left[int(
                     self.idle_animation_index)]
 
         if self.state_check_list[1]:
-            pass
+            self.walking_animation_index += 1/30
+            if self.facing_direction == 1:  # facing right
+                if self.walking_animation_index >= len(self.walking_animation_list_right):
+                    self.walking_animation_index = 0
+                self.image = self.walking_animation_list_right[int(
+                    self.walking_animation_index)]
+            elif self.facing_direction ==0: # facing left
+                # self.walking_animation_index += 1/30
+                if self.walking_animation_index >= len(self.walking_animation_list_left):
+                    self.walking_animation_index = 0
+                self.image = self.walking_animation_list_left[int(
+                    self.walking_animation_index)]
         if self.state_check_list[2]:
             pass
         if self.state_check_list[3]:

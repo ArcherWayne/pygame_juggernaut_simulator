@@ -90,7 +90,7 @@ def main():
             # debug(dt)
             # debug(hero.state_check_list)
             # debug(hero.facing_direction)
-            debug(all_sprites)
+            # debug(all_sprites)
 
             
 
