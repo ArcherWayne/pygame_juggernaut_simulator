@@ -94,6 +94,7 @@ class Hero(pygame.sprite.Sprite):
         self.skill_4_state = 0
 
         # varibles init ----------------------------------------------------------------------------- #
+        # self.creep = creep
         self.flag_moving = 0
         self.target_pos = (0, 0)
         self.idle_animation_index = 0
@@ -196,7 +197,7 @@ class Hero(pygame.sprite.Sprite):
 
     def hero_state_animation(self):
         if self.state_check_list[0]: # 检查静止不动状态
-            self.idle_animation_index += 1/30
+            self.idle_animation_index += 1/20
             if self.facing_direction == 1: # facing right
                 if self.idle_animation_index >= len(self.idle_animation_list_right):
                     self.idle_animation_index = 0
@@ -211,7 +212,7 @@ class Hero(pygame.sprite.Sprite):
                     self.idle_animation_index)]
 
         if self.state_check_list[1]:
-            self.walking_animation_index += 1/30
+            self.walking_animation_index += 1/10
             if self.facing_direction == 1:  # facing right
                 if self.walking_animation_index >= len(self.walking_animation_list_right):
                     self.walking_animation_index = 0
@@ -235,12 +236,17 @@ class Hero(pygame.sprite.Sprite):
             pass
 
     def draw_health_bar(self):
+        self.health_percentage = self.health/self.max_health
         health_bar_background = pygame.Rect(
             self.rect.midtop[0] - 42, self.rect.midtop[1] - 22, 84, 12)
         health_bar_content = pygame.Rect(
             self.rect.midtop[0] - 40, self.rect.midtop[1] - 20, round(80 * self.health_percentage), 8)
         pygame.draw.rect(screen, BLACK, health_bar_background)
         pygame.draw.rect(screen, RED, health_bar_content)
+
+    def hero_attack(self, creep):
+        print(creep.rect.midbottom)
+        creep.creep_attacked(self.damage)
 
     def hero_use_skill(self, pressed_key):
         match pressed_key:
@@ -253,9 +259,9 @@ class Hero(pygame.sprite.Sprite):
             case 4:
                 HeroSkill().swiftslash()
 
-
     def update(self):
         self.old_rect = self.rect.copy()
+
         self.keyboard_movement()
         self.mouse_movement()
         self.boundary()
@@ -263,3 +269,24 @@ class Hero(pygame.sprite.Sprite):
         self.hero_state_check()
         self.hero_state_animation()
         self.draw_health_bar()
+
+
+# reference ------------------------------------------------------------------------------------------ #
+
+# class 类1:
+#     def __init__(self, 类2) -> None:
+#         self.类2 = 类2
+
+#     def 调用类2方法(self):
+#         self.类2.方法()
+
+# class 类2:
+#     def 方法(self)
+
+# def collision_hero_creep_enemy():
+#     c_list = pygame.sprite.spritecollide(hero.sprite, creep_enemy_group, False)
+#     if c_list:
+#         hero.sprite.health_reduce(c_list[0].damage)
+#         c_list[0].health_reduce(hero.sprite.damage)
+#         print(hero.sprite.health)
+#         print(c_list[0].health)

@@ -96,7 +96,6 @@ class Creep(pygame.sprite.Sprite):
             self.moving_state = 0
 
         self.state_check_list = [self.idle_state, self.moving_state]
-        
 
     def creep_state_animation(self):
         if self.state_check_list[0]: # 检查静止不动状态
@@ -116,6 +115,7 @@ class Creep(pygame.sprite.Sprite):
                 self.image = self.creep_walk_right[int(self.movement_animation_index)]
 
     def draw_health_bar(self):
+        self.health_percentage = self.health/self.max_health
         health_bar_background = pygame.Rect(
             self.rect.midtop[0] - 32, self.rect.midtop[1] - 22, 64, 12)
         health_bar_content = pygame.Rect(
@@ -123,10 +123,22 @@ class Creep(pygame.sprite.Sprite):
         pygame.draw.rect(screen, BLACK, health_bar_background)
         pygame.draw.rect(screen, RED, health_bar_content)
 
+    def creep_attacked(self, damage):
+        print('creep damaged!')
+        self.health -= damage
+
+    def death_check(self):
+        if self.health <= 0:
+            pygame.sprite.Sprite.kill(self)
+            print('self killed!')
+        # dokill
+
     def update(self):
         self.old_rect = self.rect.copy()
+
         self.movement()
         self.creep_facing_direction()
         self.creep_state_check()
         self.creep_state_animation()
         self.draw_health_bar()
+        self.death_check()

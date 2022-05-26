@@ -22,13 +22,17 @@ HERO_BACKSWING = 0.2
 # __init__(self, health, movement_speed, damage, forswing, backswing)
 CREEP_HEIGHT = 60
 CREEP_WIDTH = 60
-CREEP_HEALTH = 50
+CREEP_HEALTH = 200
 CREEP_CIT_HEALTH = HERO_DAMAGE - 1
 CREEP_MOVEMENT_SPEED = 80
 CREEP_DAMAGE = 5
 CREEP_FORESWING = 0.2
 CREEP_BACKSWING = 0.2
 
+
+# cursor setting
+CURSOR_HEIGHT = 30
+CURSOR_WIDTH = 20
 
 # colors
 BLACK = (0, 0, 0)
