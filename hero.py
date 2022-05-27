@@ -205,13 +205,12 @@ class Hero(pygame.sprite.Sprite):
                     self.idle_animation_index)]
 
             elif self.facing_direction == 0: # facing left
-                # self.idle_animation_index += 1/30
                 if self.idle_animation_index >= len(self.idle_animation_list_left):
                     self.idle_animation_index = 0
                 self.image = self.idle_animation_list_left[int(
                     self.idle_animation_index)]
 
-        if self.state_check_list[1]:
+        if self.state_check_list[1]: # 检查移动状态
             self.walking_animation_index += 1/10
             if self.facing_direction == 1:  # facing right
                 if self.walking_animation_index >= len(self.walking_animation_list_right):

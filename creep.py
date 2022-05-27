@@ -2,7 +2,7 @@ import pygame
 import math
 from setting import *
 from debug import debug
-
+from clip import clip
 
 class Creep(pygame.sprite.Sprite):
     def __init__(self, groups, health, movement_speed, damage, spawn_location, hero):
@@ -16,25 +16,43 @@ class Creep(pygame.sprite.Sprite):
         self.damage = damage
 
         # image and rect
-        self.creep_enemy_surface = pygame.transform.scale(
-            pygame.image.load(
-                'assets/creep/player_stand.png').convert_alpha(), (CREEP_HEIGHT, CREEP_WIDTH)
-        )
-        self.image = self.creep_enemy_surface
-        self.rect = self.image.get_rect(center=spawn_location)
+        # idle_animation
+        idle_image = pygame.image.load(
+            'assets/creep/creep_idle_animation.png').convert_alpha()
+        idle_animation_frame_1_right = pygame.transform.scale(
+            clip(idle_image, 0, 0, 96, 96), (CREEP_HEIGHT, CREEP_WIDTH))
+        idle_animation_frame_2_right = pygame.transform.scale(
+            clip(idle_image, 0, 96, 96, 96), (CREEP_HEIGHT, CREEP_WIDTH))
 
-        creep_walk_1_right = pygame.transform.scale(
-            pygame.image.load(
-                'assets/creep/player_walk_1.png').convert_alpha(), (CREEP_HEIGHT, CREEP_WIDTH)
-        )
-        creep_walk_2_right = pygame.transform.scale(
-            pygame.image.load(
-                'assets/creep/player_walk_2.png').convert_alpha(), (CREEP_HEIGHT, CREEP_WIDTH)
-        )
-        creep_walk_1_left = pygame.transform.flip(creep_walk_1_right, 1, 0)
-        creep_walk_2_left = pygame.transform.flip(creep_walk_2_right, 1, 0)
-        self.creep_walk_left = [creep_walk_1_left, creep_walk_2_left]
-        self.creep_walk_right = [creep_walk_1_right, creep_walk_2_right]
+        idle_animation_frame_1_left = pygame.transform.flip(
+            idle_animation_frame_1_right, 1, 0)
+        idle_animation_frame_2_left = pygame.transform.flip(
+            idle_animation_frame_2_right, 1, 0)
+
+        self.idle_animation_list_right = [
+            idle_animation_frame_1_right, idle_animation_frame_2_right]
+        self.idle_animation_list_left = [
+            idle_animation_frame_1_left, idle_animation_frame_2_left]
+
+        # walking_animation
+        walking_image = pygame.image.load(
+            'assets/creep/creep_walking_animation.png').convert_alpha()
+        walking_animation_frame_1_right = pygame.transform.scale(
+            clip(walking_image, 0, 0, 96, 96), (CREEP_HEIGHT, CREEP_WIDTH))
+        walking_animation_frame_2_right = pygame.transform.scale(
+            clip(walking_image, 0, 96, 96, 96), (CREEP_HEIGHT, CREEP_WIDTH))
+
+        walking_animation_frame_1_left = pygame.transform.flip(
+            walking_animation_frame_1_right, 1, 0)
+        walking_animation_frame_2_left = pygame.transform.flip(
+            walking_animation_frame_2_right, 1, 0)
+
+        self.walking_animation_list_right = [walking_animation_frame_1_right, walking_animation_frame_2_right]
+        self.walking_animation_list_left = [walking_animation_frame_1_left, walking_animation_frame_2_left]
+        
+        # init animation
+        self.image = idle_animation_frame_1_right
+        self.rect = self.image.get_rect(center=spawn_location)
 
         # movement
         self.pos = pygame.math.Vector2(self.rect.topleft)
@@ -50,6 +68,7 @@ class Creep(pygame.sprite.Sprite):
         self.hero = hero
         self.flag_moving = 0
         self.target_pos = (0, 0)
+        self.idle_animation_index = 0
         self.movement_animation_index = 0
 
     def get_dt(self, dt):
@@ -63,8 +82,6 @@ class Creep(pygame.sprite.Sprite):
             self.flag_moving = 1
         elif self.distance_with_hero <= 60:
             self.flag_moving = 0
-
-        # debug(self.flag_moving, 10, 30, 'self.flag_moving')
 
         if self.flag_moving:
             self.target_pos = self.hero.rect.midbottom
@@ -99,20 +116,31 @@ class Creep(pygame.sprite.Sprite):
 
     def creep_state_animation(self):
         if self.state_check_list[0]: # 检查静止不动状态
-            self.image = self.creep_enemy_surface
+            self.idle_animation_index += 1/20
+            if self.facing_direction == 1: # facing right
+                if self.idle_animation_index >= len(self.idle_animation_list_right):
+                    self.idle_animation_index = 0
+                self.image = self.idle_animation_list_right[int(
+                    self.idle_animation_index)]
+
+            elif self.facing_direction == 0: # facing left
+                if self.idle_animation_index >= len(self.idle_animation_list_left):
+                    self.idle_animation_index = 0
+                self.image = self.idle_animation_list_left[int(
+                    self.idle_animation_index)]
 
         if self.state_check_list[1]: # 检查移动状态
             if self.facing_direction == 0: # facing left
-                self.movement_animation_index += 0.1
-                if self.movement_animation_index >= len(self.creep_walk_left):
+                self.movement_animation_index += 1/15
+                if self.movement_animation_index >= len(self.walking_animation_list_left):
                     self.movement_animation_index = 0
-                self.image = self.creep_walk_left[int(self.movement_animation_index)]
+                self.image = self.walking_animation_list_left[int(self.movement_animation_index)]
 
             if self.facing_direction == 1: # facing right
-                self.movement_animation_index += 0.1
-                if self.movement_animation_index >= len(self.creep_walk_right):
+                self.movement_animation_index += 1/15
+                if self.movement_animation_index >= len(self.walking_animation_list_right):
                     self.movement_animation_index = 0
-                self.image = self.creep_walk_right[int(self.movement_animation_index)]
+                self.image = self.walking_animation_list_right[int(self.movement_animation_index)]
 
     def draw_health_bar(self):
         self.health_percentage = self.health/self.max_health
