@@ -152,13 +152,11 @@ class Creep(pygame.sprite.Sprite):
         pygame.draw.rect(screen, RED, health_bar_content)
 
     def creep_attacked(self, damage):
-        print('creep damaged!')
         self.health -= damage
 
     def death_check(self):
         if self.health <= 0:
             pygame.sprite.Sprite.kill(self)
-            print('self killed!')
         # dokill
 
     def update(self):

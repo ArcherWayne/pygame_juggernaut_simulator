@@ -8,7 +8,7 @@ from setting import *
 
 
 class Hero(pygame.sprite.Sprite):
-    def __init__(self, groups, name, health, movement_speed, damage, foreswing, backswing):
+    def __init__(self, groups, name, health, movement_speed, damage, attacking_distance, foreswing, backswing):
         super(Hero, self).__init__(groups)
         # attributes -------------------------------------------------------------------------------- #
         self.name = name
@@ -17,6 +17,7 @@ class Hero(pygame.sprite.Sprite):
         self.health_percentage = self.health/self.max_health
         self.movement_speed = movement_speed
         self.damage = damage
+        self.attacking_distance = attacking_distance
         self.foreswing = foreswing
         self.backswing = backswing
 
@@ -244,8 +245,14 @@ class Hero(pygame.sprite.Sprite):
         pygame.draw.rect(screen, RED, health_bar_content)
 
     def hero_attack(self, creep):
-        print(creep.rect.midbottom)
-        creep.creep_attacked(self.damage)
+        self.distance_when_attacking = math.sqrt(math.pow((self.rect.midbottom[0]-creep.rect.midbottom[0]),2)+\
+            math.pow((self.rect.midbottom[1]-creep.rect.midbottom[1]),2))
+
+        if self.distance_when_attacking > self.attacking_distance:
+            print('小兵太远!')
+            self.init_mouse_movement(creep.rect.midbottom)
+        elif self.distance_when_attacking <= self.attacking_distance:
+            creep.creep_attacked(self.damage)
 
     def hero_use_skill(self, pressed_key):
         match pressed_key:

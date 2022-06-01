@@ -35,7 +35,7 @@ cursor = Cursor(cursor_group)
 hero_group = pygame.sprite.GroupSingle()
 creep_group = pygame.sprite.Group()
 hero = Hero(hero_group, 'Juggernaut', HERO_HEALTH,
-            HERO_MOVEMENT_SPEED, HERO_DAMAGE, HERO_FORESWING, HERO_BACKSWING)
+            HERO_MOVEMENT_SPEED, HERO_DAMAGE, HERO_ATTACKINGDISTANCE, HERO_FORESWING, HERO_BACKSWING)
 
 for i in range(3):
     creep_group.add(Creep(creep_group, CREEP_HEALTH, CREEP_MOVEMENT_SPEED, \
@@ -103,6 +103,7 @@ def main():
 
             # debug goes behind here !!! -------------------------------------------------------------------- #
             debug(creep_group.sprites())
+            debug(int(1/dt), info_name='fps', y=30)
 
 
         pygame.display.update()
