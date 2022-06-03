@@ -5,7 +5,7 @@ from debug import debug
 from clip import clip
 
 class Creep(pygame.sprite.Sprite):
-    def __init__(self, groups, health, movement_speed, damage, spawn_location, hero):
+    def __init__(self, groups, health, movement_speed, damage, spawn_location, hero, collision_groups):
         super(Creep, self).__init__(groups)
 
         # attributes
@@ -14,6 +14,7 @@ class Creep(pygame.sprite.Sprite):
         self.health_percentage = self.health/self.max_health
         self.movement_speed = movement_speed
         self.damage = damage
+        self.collision_groups = collision_groups
 
         # image and rect
         # idle_animation
@@ -157,12 +158,47 @@ class Creep(pygame.sprite.Sprite):
     def death_check(self):
         if self.health <= 0:
             pygame.sprite.Sprite.kill(self)
-        # dokill
+
+    def collision_detection(self):
+        self.pos.x += self.direction.x * self.movement_speed * self.dt
+        self.rect.x = round(self.pos.x)
+        self.collision('horizontal')
+        self.pos.y += self.direction.y * self.movement_speed * self.dt
+        self.rect.y = round(self.pos.y)
+        self.collision('vertical')
+
+    def collision(self, direction):
+        collision_sprites = pygame.sprite.spritecollide(self, self.collision_groups, False)
+        if collision_sprites:
+            if direction == 'horizontal':
+                for sprite in collision_sprites:
+                    # collision on the right
+                    if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:
+                        self.rect.right = sprite.rect.left
+                        self.pos.x = self.rect.x
+
+                    # collision on the left
+                    if self.rect.left <= sprite.rect.right and self.old_rect.left >= sprite.old_rect.right:
+                        self.rect.left = sprite.rect.right
+                        self.pos.x = self.rect.x
+
+            if direction == 'vertical':
+                for sprite in collision_sprites:
+                    # collision on the bottom
+                    if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
+                        self.rect.bottom = sprite.rect.top
+                        self.pos.y = self.rect.y
+
+                    # collision on the top
+                    if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
+                        self.rect.top = sprite.rect.bottom
+                        self.pos.y = self.rect.y
 
     def update(self):
         self.old_rect = self.rect.copy()
 
         self.movement()
+        self.collision_detection()
         self.creep_facing_direction()
         self.creep_state_check()
         self.creep_state_animation()

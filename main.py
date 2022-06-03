@@ -34,12 +34,13 @@ cursor_group = pygame.sprite.GroupSingle()
 cursor = Cursor(cursor_group)
 hero_group = pygame.sprite.GroupSingle()
 creep_group = pygame.sprite.Group()
+collision_group =pygame.sprite.Group()
 hero = Hero(hero_group, 'Juggernaut', HERO_HEALTH,
             HERO_MOVEMENT_SPEED, HERO_DAMAGE, HERO_ATTACKINGDISTANCE, HERO_FORESWING, HERO_BACKSWING)
-
-for i in range(3):
-    creep_group.add(Creep(creep_group, CREEP_HEALTH, CREEP_MOVEMENT_SPEED, \
-        CREEP_DAMAGE, (random.randint(200, 1200), random.randint(200, 600)), hero))
+collision_group.add(hero)
+# for i in range(3):
+#     creep_group.add(Creep(creep_group, CREEP_HEALTH, CREEP_MOVEMENT_SPEED, \
+#         CREEP_DAMAGE, (random.randint(200, 1200), random.randint(200, 600)), hero))
 
 creep_enemy_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(creep_enemy_timer, 3000)
@@ -77,9 +78,9 @@ def main():
                 keyboard_action(keyboard_down_button, hero)
 
             if event.type == creep_enemy_timer:
-                creep_group.add(Creep(creep_group, CREEP_HEALTH, CREEP_MOVEMENT_SPEED, \
-                    CREEP_DAMAGE, (random.randint(200, 1200), random.randint(200, 600)), hero))
-
+                creep_group.add(Creep([creep_group, collision_group], CREEP_HEALTH, CREEP_MOVEMENT_SPEED, \
+                    CREEP_DAMAGE, (random.randint(200, 1200), random.randint(200, 600)), hero, collision_group))
+                
         clock.tick(FPS)
 
         # delta time    ------------------------------------------------------------------------------------- #
@@ -102,8 +103,8 @@ def main():
             cursor_group.draw(screen)
 
             # debug goes behind here !!! -------------------------------------------------------------------- #
-            debug(creep_group.sprites())
-            debug(int(1/dt), info_name='fps', y=30)
+            debug(collision_group.sprites())
+            # debug(int(1/dt), info_name='fps', y=30)
 
 
         pygame.display.update()
