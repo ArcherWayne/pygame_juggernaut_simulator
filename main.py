@@ -1,4 +1,5 @@
 import pygame, sys, time, random
+from animation_manager import AnimationManager
 from setting import *
 from creep import Creep
 from hero import Hero
@@ -6,7 +7,6 @@ from debug import debug
 from mouse_action import mouse_action
 from keyboard_action import keyboard_action
 from cursor import Cursor
-
 
 # general setup --------------------------------------------------------------------------------------------- #
 ## pygame setup
@@ -24,9 +24,9 @@ clock = pygame.time.Clock()
 game_active = True
 pygame.mouse.set_visible(False)
 
-
 # class setup
 # class = Class()
+animation_manager = AnimationManager()
 # group setup ----------------------------------------------------------------------------------------------- #
 # all_sprites = pygame.sprite.Group()
 # collision_sprites = pygame.sprite.Group()
@@ -34,7 +34,7 @@ cursor_group = pygame.sprite.GroupSingle()
 cursor = Cursor(cursor_group)
 hero_group = pygame.sprite.GroupSingle()
 creep_group = pygame.sprite.Group()
-collision_group =pygame.sprite.Group()
+collision_group = pygame.sprite.Group()
 hero = Hero(hero_group, 'Juggernaut', HERO_HEALTH,
             HERO_MOVEMENT_SPEED, HERO_DAMAGE, HERO_ATTACKINGDISTANCE, HERO_FORESWING, HERO_BACKSWING)
 collision_group.add(hero)
@@ -44,6 +44,7 @@ collision_group.add(hero)
 
 creep_enemy_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(creep_enemy_timer, 3000)
+
 
 # main ------------------------------------------------------------------------------------------------------ #
 def main():
@@ -79,17 +80,17 @@ def main():
 
             if event.type == creep_enemy_timer:
                 creep_group.add(Creep([creep_group, collision_group], CREEP_HEALTH, CREEP_MOVEMENT_SPEED, \
-                    CREEP_DAMAGE, (random.randint(200, 1200), random.randint(200, 600)), hero, collision_group))
-                
+                                      CREEP_DAMAGE, (random.randint(200, 1200), random.randint(200, 600)), hero,
+                                      collision_group, animation_manager))
+
         clock.tick(FPS)
 
         # delta time    ------------------------------------------------------------------------------------- #
         dt = time.time() - last_time
         hero.get_dt(dt)
-        for creep in creep_group.sprites(): # Group.sprites() 加上括号才是返回groups中包含sprites的列表, 没有括号就是Group的方法
+        for creep in creep_group.sprites():  # Group.sprites() 加上括号才是返回groups中包含sprites的列表, 没有括号就是Group的方法
             creep.get_dt(dt)
         last_time = time.time()
-
 
         if game_active:
             # draw stuff    --------------------------------------------------------------------------------- #
@@ -101,11 +102,9 @@ def main():
             hero_group.draw(screen)
             cursor_group.update()
             cursor_group.draw(screen)
+            animation_manager.update()
 
             # debug goes behind here !!! -------------------------------------------------------------------- #
-            debug(collision_group.sprites())
-            # debug(int(1/dt), info_name='fps', y=30)
-
 
         pygame.display.update()
 

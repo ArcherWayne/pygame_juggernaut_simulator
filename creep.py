@@ -1,11 +1,12 @@
 import pygame
 import math
+from animation_manager import AnimationManager
 from setting import *
 from debug import debug
 from clip import clip
 
 class Creep(pygame.sprite.Sprite):
-    def __init__(self, groups, health, movement_speed, damage, spawn_location, hero, collision_groups):
+    def __init__(self, groups, health, movement_speed, damage, spawn_location, hero, collision_groups, animation_mananger):
         super(Creep, self).__init__(groups)
 
         # attributes
@@ -14,7 +15,12 @@ class Creep(pygame.sprite.Sprite):
         self.health_percentage = self.health/self.max_health
         self.movement_speed = movement_speed
         self.damage = damage
+        self.animation_mananger = animation_mananger
+
+        # collision
         self.collision_groups = collision_groups
+        # self.collision_rect = pygame.Rect(0, 0, CREEP_WIDTH/2, CREEP_HEIGHT/2)
+        # self.old_collision_rect = self.collision_rect.copy()
 
         # image and rect
         # idle_animation
@@ -56,7 +62,7 @@ class Creep(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=spawn_location)
 
         # movement
-        self.pos = pygame.math.Vector2(self.rect.topleft)
+        self.pos = pygame.math.Vector2(self.rect.midbottom)
         self.direction = pygame.math.Vector2()
         self.old_rect = self.rect.copy()  # old_rect是用来检测碰撞的一部分 不是dt中的一部分
         self.facing_direction = 0
@@ -154,17 +160,14 @@ class Creep(pygame.sprite.Sprite):
 
     def creep_attacked(self, damage):
         self.health -= damage
+        self.animation_mananger.init_animation('blood_animation', self.rect.center)
 
     def death_check(self):
         if self.health <= 0:
             pygame.sprite.Sprite.kill(self)
 
     def collision_detection(self):
-        self.pos.x += self.direction.x * self.movement_speed * self.dt
-        self.rect.x = round(self.pos.x)
         self.collision('horizontal')
-        self.pos.y += self.direction.y * self.movement_speed * self.dt
-        self.rect.y = round(self.pos.y)
         self.collision('vertical')
 
     def collision(self, direction):
@@ -196,6 +199,8 @@ class Creep(pygame.sprite.Sprite):
 
     def update(self):
         self.old_rect = self.rect.copy()
+        # self.collision_rect.midbottom = self.rect.midbottom
+        # self.old_collision_rect = self.collision_rect.copy()
 
         self.movement()
         self.collision_detection()

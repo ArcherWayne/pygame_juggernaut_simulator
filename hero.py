@@ -35,11 +35,11 @@ class Hero(pygame.sprite.Sprite):
         idle_image = pygame.image.load(
             'assets/hero/hero_idle_animation.png').convert_alpha()
         idle_animation_frame_1_right = pygame.transform.scale(
-            clip(idle_image, 0, 0, 96, 96), (HERO_HEIGHT, HERO_WIDTH))
+            clip(idle_image, 0, 0, 96, 96), (HERO_WIDTH, HERO_HEIGHT))
         idle_animation_frame_2_right = pygame.transform.scale(
-            clip(idle_image, 0, 96, 96, 96), (HERO_HEIGHT, HERO_WIDTH))
+            clip(idle_image, 0, 96, 96, 96), (HERO_WIDTH, HERO_HEIGHT))
         idle_animation_frame_3_right = pygame.transform.scale(
-            clip(idle_image, 0, 192, 96, 96), (HERO_HEIGHT, HERO_WIDTH))
+            clip(idle_image, 0, 192, 96, 96), (HERO_WIDTH, HERO_HEIGHT))
         idle_animation_frame_1_left = pygame.transform.flip(
             idle_animation_frame_1_right, 1, 0)
         idle_animation_frame_2_left = pygame.transform.flip(
@@ -55,13 +55,13 @@ class Hero(pygame.sprite.Sprite):
         walking_image = pygame.image.load(
             'assets/hero/hero_walking_animation.png').convert_alpha()
         walking_animation_frame_1_right = pygame.transform.scale(
-            clip(walking_image, 0, 0, 96, 96), (HERO_HEIGHT, HERO_WIDTH))
+            clip(walking_image, 0, 0, 96, 96), (HERO_WIDTH, HERO_HEIGHT))
         walking_animation_frame_2_right = pygame.transform.scale(
-            clip(walking_image, 0, 96, 96, 96), (HERO_HEIGHT, HERO_WIDTH))
+            clip(walking_image, 0, 96, 96, 96), (HERO_WIDTH, HERO_HEIGHT))
         walking_animation_frame_3_right = pygame.transform.scale(
-            clip(walking_image, 0, 192, 96, 96), (HERO_HEIGHT, HERO_WIDTH))
+            clip(walking_image, 0, 192, 96, 96), (HERO_WIDTH, HERO_HEIGHT))
         walking_animation_frame_4_right = pygame.transform.scale(
-            clip(walking_image, 0, 288, 96, 96), (HERO_HEIGHT, HERO_WIDTH))
+            clip(walking_image, 0, 288, 96, 96), (HERO_WIDTH, HERO_HEIGHT))
         walking_animation_frame_1_left = pygame.transform.flip(
             walking_animation_frame_1_right, 1, 0)
         walking_animation_frame_2_left = pygame.transform.flip(
@@ -78,6 +78,8 @@ class Hero(pygame.sprite.Sprite):
         # init animation
         self.image = idle_animation_frame_1_right
         self.rect = self.image.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
+        # self.collision_rect = pygame.Rect(0, 0, HERO_WIDTH/2, HERO_HEIGHT/2)
+        # self.old_collision_rect = self.collision_rect.copy()
 
         # movement ---------------------------------------------------------------------------------- #
         self.pos = pygame.math.Vector2(self.rect.topleft)
@@ -267,6 +269,8 @@ class Hero(pygame.sprite.Sprite):
 
     def update(self):
         self.old_rect = self.rect.copy()
+        # self.collision_rect.midbottom = self.rect.midbottom
+        # self.old_collision_rect = self.collision_rect.copy()
 
         self.keyboard_movement()
         self.mouse_movement()
