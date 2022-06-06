@@ -105,7 +105,7 @@ def main():
             animation_manager.update()
 
             # debug goes behind here !!! -------------------------------------------------------------------- #
-
+            debug(hero.state_check_list)
         pygame.display.update()
 
 

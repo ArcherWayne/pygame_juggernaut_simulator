@@ -1,4 +1,1 @@
-def ab(a, b):
-    return a+b
-
-print(ab(3, 5))
+len(self.attack_animation_list_right)

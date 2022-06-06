@@ -14,7 +14,7 @@ def mouse_action(mouse_pos, mouse_click_pos, mouse_click_button, hero, creep_gro
         if pygame.sprite.spritecollide(cursor, creep_group, False):
             for creep in creep_group.sprites():
                 if pygame.Rect.collidepoint(creep.rect, mouse_click_pos):
-                    hero.hero_attack(creep)
+                    hero.hero_init_attack(creep)
         else:
             hero.init_mouse_movement(mouse_click_pos)
 

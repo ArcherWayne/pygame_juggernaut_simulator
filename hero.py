@@ -1,6 +1,6 @@
 import pygame
 import math
-import creep
+import random
 from hero_skill import HeroSkill
 from debug import debug
 from clip import clip
@@ -71,10 +71,24 @@ class Hero(pygame.sprite.Sprite):
         walking_animation_frame_4_left = pygame.transform.flip(
             walking_animation_frame_4_right, 1, 0)
         self.walking_animation_list_right = [walking_animation_frame_1_right, walking_animation_frame_2_right,\
-             walking_animation_frame_3_right, walking_animation_frame_4_right]
+            walking_animation_frame_3_right, walking_animation_frame_4_right]
         self.walking_animation_list_left = [walking_animation_frame_1_left, walking_animation_frame_2_left, \
             walking_animation_frame_3_left, walking_animation_frame_4_left]
-        
+
+        # attack animation
+        attack_image = pygame.image.load(
+            'assets/hero/hero_attack_animation.png').convert_alpha()
+        attack_animation_frame_1_right = pygame.transform.scale(
+            clip(attack_image, 0, 0, 96, 96), (HERO_WIDTH, HERO_HEIGHT))
+        attack_animation_frame_2_right = pygame.transform.scale(
+            clip(attack_image, 0, 96, 96, 96), (HERO_WIDTH, HERO_HEIGHT))
+        attack_animation_frame_1_left = pygame.transform.flip(
+            attack_animation_frame_1_right, 1, 0)
+        attack_animation_frame_2_left = pygame.transform.flip(
+            attack_animation_frame_2_right, 1, 0)
+        self.attack_animation_list_right = [attack_animation_frame_1_right, attack_animation_frame_2_right]
+        self.attack_animation_list_left = [attack_animation_frame_1_left, attack_animation_frame_2_left]
+
         # init animation
         self.image = idle_animation_frame_1_right
         self.rect = self.image.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
@@ -87,6 +101,11 @@ class Hero(pygame.sprite.Sprite):
         self.old_rect = self.rect.copy()  # old_rect是用来检测碰撞的一部分, 不是dt中的一部分
         self.facing_direction = 0  # = 0 面向左边 = 1 面向右边
 
+        # sound effect ------------------------------------------------------------------------------ #
+        self.attack_sound_tuple = (pygame.mixer.Sound('assets/sound/Juggernaut_attack1.mp3'), \
+            pygame.mixer.Sound('assets/sound/Juggernaut_attack2.mp3'), pygame.mixer.Sound('assets/sound/Juggernaut_attack2.mp3'))
+        # self.attack_sound.set_volume(0.5)
+
         # state check ------------------------------------------------------------------------------- #
         self.idle_state = 1
         self.moving_state = 0
@@ -95,13 +114,17 @@ class Hero(pygame.sprite.Sprite):
         self.skill_2_state = 0
         self.skill_3_state = 0
         self.skill_4_state = 0
+        self.state_check_list = [self.idle_state, self.moving_state, self.attacking_state,
+                            self.skill_1_state, self.skill_2_state, self.skill_3_state, self.skill_4_state]
 
         # varibles init ----------------------------------------------------------------------------- #
         # self.creep = creep
-        self.flag_moving = 0
+        self.attack_target = 0
+        # self.flag_moving = 0
         self.target_pos = (0, 0)
         self.idle_animation_index = 0
         self.walking_animation_index = 0
+        self.attack_animation_index = 0
 
     def get_dt(self, dt):
         self.dt = dt
@@ -109,19 +132,19 @@ class Hero(pygame.sprite.Sprite):
     def keyboard_movement(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
-            self.flag_moving = 0
+            self.moving_state = 0
             self.direction.y = -1
         elif keys[pygame.K_s]:
-            self.flag_moving = 0
+            self.moving_state = 0
             self.direction.y = 1
         else:
             self.direction.y = 0
 
         if keys[pygame.K_a]:
-            self.flag_moving = 0
+            self.moving_state = 0
             self.direction.x = -1
         elif keys[pygame.K_d]:
-            self.flag_moving = 0
+            self.moving_state = 0
             self.direction.x = 1
         else:
             self.direction.x = 0
@@ -137,10 +160,10 @@ class Hero(pygame.sprite.Sprite):
     def init_mouse_movement(self, mouse_click_pos):
         self.target_pos = mouse_click_pos
         if self.rect.midbottom != mouse_click_pos:
-            self.flag_moving = 1
+            self.moving_state = 1
 
     def mouse_movement(self):
-        if self.flag_moving:
+        if self.moving_state:
             self.direction.y = self.target_pos[1] - self.rect.midbottom[1]
             self.direction.x = self.target_pos[0] - self.rect.midbottom[0]
 
@@ -153,7 +176,7 @@ class Hero(pygame.sprite.Sprite):
             self.rect.y = round(self.pos.y)
 
         if self.rect.midbottom == self.target_pos:
-            self.flag_moving = 0
+            self.moving_state = 0
 
         if math.sqrt(math.pow((self.rect.midbottom[0]-self.target_pos[0]), 2) +
                      math.pow((self.rect.midbottom[1]-self.target_pos[1]), 2)) <= 3:
@@ -188,15 +211,19 @@ class Hero(pygame.sprite.Sprite):
     def hero_state_check(self):
         # update hero state
         # check idle and movement state
-        if self.old_rect.x != self.rect.x or self.old_rect.y != self.rect.y:
+        if self.attacking_state == 1:
             self.idle_state = 0
-            self.moving_state = 1
-        else:
-            self.idle_state = 1
             self.moving_state = 0
+        else:
+            if self.old_rect.x != self.rect.x or self.old_rect.y != self.rect.y:
+                self.idle_state = 0
+                self.moving_state = 1
+            else:
+                self.idle_state = 1
+                self.moving_state = 0
 
         self.state_check_list = [self.idle_state, self.moving_state, self.attacking_state,
-                                 self.skill_1_state, self.skill_2_state, self.skill_3_state, self.skill_4_state, ]
+                                 self.skill_1_state, self.skill_2_state, self.skill_3_state, self.skill_4_state]
 
     def hero_state_animation(self):
         if self.state_check_list[0]: # 检查静止不动状态
@@ -227,7 +254,26 @@ class Hero(pygame.sprite.Sprite):
                 self.image = self.walking_animation_list_left[int(
                     self.walking_animation_index)]
         if self.state_check_list[2]:
-            pass
+            self.attack_animation_index += 1/10
+            if 0.9 < self.attack_animation_index < 1.0:
+                self.hero_attack()
+            # if self.facing_direction == 1: # facing right
+            if self.attack_target.rect.x > self.pos.x:
+                if self.attack_animation_index >= len(self.attack_animation_list_right):
+                    self.attack_animation_index = 0
+                    self.attacking_state = 0
+                    self.facing_direction = 1
+                self.image = self.attack_animation_list_right[int(
+                    self.attack_animation_index)]
+
+            # elif self.facing_direction == 0: # facing left
+            elif self.attack_target.rect.x < self.pos.x:
+                if self.attack_animation_index >= len(self.attack_animation_list_left):
+                    self.attack_animation_index = 0
+                    self.attacking_state = 0
+                    self.facing_direction = 0
+                self.image = self.attack_animation_list_left[int(
+                    self.attack_animation_index)]
         if self.state_check_list[3]:
             pass
         if self.state_check_list[4]:
@@ -246,15 +292,27 @@ class Hero(pygame.sprite.Sprite):
         pygame.draw.rect(screen, BLACK, health_bar_background)
         pygame.draw.rect(screen, RED, health_bar_content)
 
-    def hero_attack(self, creep):
+    def hero_init_attack(self, creep):
+        self.attack_target = creep
         self.distance_when_attacking = math.sqrt(math.pow((self.rect.midbottom[0]-creep.rect.midbottom[0]),2)+\
             math.pow((self.rect.midbottom[1]-creep.rect.midbottom[1]),2))
 
         if self.distance_when_attacking > self.attacking_distance:
-            print('小兵太远!')
+            # print('小兵太远!')
             self.init_mouse_movement(creep.rect.midbottom)
         elif self.distance_when_attacking <= self.attacking_distance:
-            creep.creep_attacked(self.damage)
+            self.attacking_state = 1
+
+    def hero_attack(self):
+        self.attack_target.creep_attacked(self.damage)
+        self.attack_sound_tuple[random.randint(0,2)].play()
+
+        # for sound in self.attack_sound_tuple:
+        #     sound.play()
+
+        # self.attack_sound_tuple = (pygame.mixer.Sound('assets/sound/Juggernaut_attack1.mp3'), \
+        #     pygame.mixer.Sound('assets/sound/Juggernaut_attack2.mp3'), pygame.mixer.Sound('assets/sound/Juggernaut_attack2.mp3'))
+# self.jump_sound.play()
 
     def hero_use_skill(self, pressed_key):
         match pressed_key:
@@ -276,9 +334,10 @@ class Hero(pygame.sprite.Sprite):
         self.mouse_movement()
         self.boundary()
         self.hero_facing_direction()
+        self.draw_health_bar()
+        # self.hero_attack()
         self.hero_state_check()
         self.hero_state_animation()
-        self.draw_health_bar()
 
 
 # reference ------------------------------------------------------------------------------------------ #

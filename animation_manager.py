@@ -42,4 +42,4 @@ class AnimationManager(pygame.sprite.Sprite):
 
     def update(self):
         self.blood_animation()
-        debug(self.animation_dict)
+        # debug(self.animation_dict)
