@@ -307,13 +307,6 @@ class Hero(pygame.sprite.Sprite):
         self.attack_target.creep_attacked(self.damage)
         self.attack_sound_tuple[random.randint(0,2)].play()
 
-        # for sound in self.attack_sound_tuple:
-        #     sound.play()
-
-        # self.attack_sound_tuple = (pygame.mixer.Sound('assets/sound/Juggernaut_attack1.mp3'), \
-        #     pygame.mixer.Sound('assets/sound/Juggernaut_attack2.mp3'), pygame.mixer.Sound('assets/sound/Juggernaut_attack2.mp3'))
-# self.jump_sound.play()
-
     def hero_use_skill(self, pressed_key):
         match pressed_key:
             case 1:
@@ -327,15 +320,12 @@ class Hero(pygame.sprite.Sprite):
 
     def update(self):
         self.old_rect = self.rect.copy()
-        # self.collision_rect.midbottom = self.rect.midbottom
-        # self.old_collision_rect = self.collision_rect.copy()
 
         self.keyboard_movement()
         self.mouse_movement()
         self.boundary()
         self.hero_facing_direction()
         self.draw_health_bar()
-        # self.hero_attack()
         self.hero_state_check()
         self.hero_state_animation()
 

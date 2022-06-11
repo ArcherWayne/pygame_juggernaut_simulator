@@ -61,6 +61,14 @@ class Creep(pygame.sprite.Sprite):
         self.image = idle_animation_frame_1_right
         self.rect = self.image.get_rect(center=spawn_location)
 
+        # attack animation
+        attack_image = pygame.image.load(
+            'assets/creep/creep_attack_animation.png').convert_alpha()
+        self.attack_animation_frame_1_right = pygame.transform.scale(
+            clip(attack_image, 0, 0, 96, 96), (CREEP_HEIGHT, CREEP_WIDTH))
+        walking_animation_frame_1_left = pygame.transform.flip(
+            walking_animation_frame_1_right, 1, 0)
+
         # movement
         self.pos = pygame.math.Vector2(self.rect.midbottom)
         self.direction = pygame.math.Vector2()
@@ -70,6 +78,12 @@ class Creep(pygame.sprite.Sprite):
         # state check
         self.idle_state = 1
         self.moving_state = 0
+        self.attacking_state = 0
+
+        self.state_check_list = [self.idle_state, self.moving_state, self.attacking_state]
+
+        # aggro
+        self.aggro_target = []
 
         # varibles init
         self.hero = hero
@@ -81,17 +95,20 @@ class Creep(pygame.sprite.Sprite):
     def get_dt(self, dt):
         self.dt = dt
 
-    def movement(self):
-        self.distance_with_hero = int(math.sqrt(math.pow((self.rect.midbottom[0] - self.hero.rect.midbottom[0]), 2)
-                                                + math.pow((self.rect.midbottom[1] - self.hero.rect.midbottom[1]), 2)))
+    def aggro_check(self):
+        self.aggro_target = self.hero
 
-        if self.distance_with_hero > 60:
+        self.distance_with_target = int(math.sqrt(math.pow((self.rect.midbottom[0] - self.aggro_target.rect.midbottom[0]), 2)
+                                                + math.pow((self.rect.midbottom[1] - self.aggro_target.rect.midbottom[1]), 2)))
+
+        if 60 < self.distance_with_target < 150:
             self.flag_moving = 1
-        elif self.distance_with_hero <= 60:
+        else:
             self.flag_moving = 0
 
+    def movement(self):
         if self.flag_moving:
-            self.target_pos = self.hero.rect.midbottom
+            self.target_pos = self.aggro_target.rect.midbottom
 
             self.direction.y = self.target_pos[1] - self.rect.midbottom[1]
             self.direction.x = self.target_pos[0] - self.rect.midbottom[0]
@@ -119,7 +136,7 @@ class Creep(pygame.sprite.Sprite):
             self.idle_state = 1
             self.moving_state = 0
 
-        self.state_check_list = [self.idle_state, self.moving_state]
+        self.state_check_list = [self.idle_state, self.moving_state, self.attacking_state]
 
     def creep_state_animation(self):
         if self.state_check_list[0]: # 检查静止不动状态
@@ -148,6 +165,9 @@ class Creep(pygame.sprite.Sprite):
                 if self.movement_animation_index >= len(self.walking_animation_list_right):
                     self.movement_animation_index = 0
                 self.image = self.walking_animation_list_right[int(self.movement_animation_index)]
+
+        if self.state_check_list[2]:
+            pass
 
     def draw_health_bar(self):
         self.health_percentage = self.health/self.max_health
@@ -199,9 +219,8 @@ class Creep(pygame.sprite.Sprite):
 
     def update(self):
         self.old_rect = self.rect.copy()
-        # self.collision_rect.midbottom = self.rect.midbottom
-        # self.old_collision_rect = self.collision_rect.copy()
 
+        self.aggro_check()
         self.movement()
         self.collision_detection()
         self.creep_facing_direction()
